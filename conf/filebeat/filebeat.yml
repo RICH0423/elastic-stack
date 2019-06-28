@@ -1,0 +1,14 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /tmp/log/api.log
+  multiline:
+    pattern: '(^.+Exception: .+)|(^\s+at .+)|(^\s+... \d+ more)|(^\s*Caused by:.+)'
+    negate: false
+    match: after
+  fields:
+    index: api
+    doc: spring-boot
+output.logstash:
+  hosts: ["localhost:5044"]  

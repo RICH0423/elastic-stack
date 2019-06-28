@@ -1,0 +1,28 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      labels.dedot: true
+      templates:
+        - condition:
+            contains:
+              docker.container.image: log-api
+          config:
+            - type: docker
+              containers.ids:
+                - "${data.docker.container.id}"
+              multiline:
+                pattern: '(^.+Exception: .+)|(^\s+at .+)|(^\s+... \d+ more)|(^\s*Caused by:.+)'
+                negate: false
+                match: after
+              fields:
+                index: api
+                doc: spring-boot
+filebeat.config.inputs:
+  enabled: true
+  path: /usr/share/filebeat/filebeat.yml
+  reload.enabled: true
+  reload.period: 10s
+output.logstash:
+  hosts: ["172.24.0.1:5044"]
+#output.console:
+#  pretty: true
